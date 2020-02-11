@@ -49,8 +49,8 @@ public class S3MockListenerXmlConfigurationTest {
     final S3Object s3Object = s3Client.getObject(BUCKET_NAME, uploadFile.getName());
 
     final InputStream uploadFileIs = new FileInputStream(uploadFile);
-    final String uploadHash = HashUtil.getDigest(uploadFileIs);
-    final String downloadedHash = HashUtil.getDigest(s3Object.getObjectContent());
+    final String uploadHash = HashUtil.getHexDigest(uploadFileIs);
+    final String downloadedHash = HashUtil.getHexDigest(s3Object.getObjectContent());
     uploadFileIs.close();
     s3Object.close();
 

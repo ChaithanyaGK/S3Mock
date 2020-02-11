@@ -1,5 +1,5 @@
 /*
- *  Copyright 2017-2019 Adobe.
+ *  Copyright 2017-2020 Adobe.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ public final class AwsHttpHeaders {
   public static final String NOT_COPY_SOURCE_RANGE = NOT + COPY_SOURCE_RANGE;
 
   public static final String METADATA_DIRECTIVE = "x-amz-metadata-directive";
+
+  public static final String CONTENT_MD5 = "Content-MD5";
 
   private AwsHttpHeaders() {
     // empty private constructor

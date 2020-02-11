@@ -1097,7 +1097,7 @@ public class FileStore {
 
   private String digest(final String salt, final File dataFile) throws IOException {
     try (final FileInputStream inputStream = new FileInputStream(dataFile)) {
-      return HashUtil.getDigest(salt, inputStream);
+      return HashUtil.getHexDigest(salt, inputStream);
     } catch (final NoSuchAlgorithmException e) {
       LOG.error("Hash can not be calculated!", e);
       return null;

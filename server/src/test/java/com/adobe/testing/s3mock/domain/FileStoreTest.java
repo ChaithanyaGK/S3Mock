@@ -183,7 +183,7 @@ public class FileStoreTest {
   public void shouldStoreFileInBucket() throws Exception {
     final File sourceFile = new File(TEST_FILE_PATH);
     final String name = sourceFile.getName();
-    final String md5 = HashUtil.getDigest(new FileInputStream(sourceFile));
+    final String md5 = HashUtil.getHexDigest(new FileInputStream(sourceFile));
     final String size = Long.toString(sourceFile.length());
 
     final S3Object returnedObject =
@@ -214,7 +214,8 @@ public class FileStoreTest {
 
     final String name = sourceFile.getName();
     final String contentType = ContentType.TEXT_PLAIN.toString();
-    final String md5 = HashUtil.getDigest(TEST_ENC_KEY,
+    final String md5 = HashUtil.getHexDigest(
+        TEST_ENC_KEY,
         new ByteArrayInputStream(UNSIGNED_CONTENT.getBytes(UTF_8)));
 
     final S3Object returnedObject =
@@ -244,7 +245,8 @@ public class FileStoreTest {
 
     final String name = sourceFile.getName();
     final String contentType = ContentType.TEXT_PLAIN.toString();
-    final String md5 = HashUtil.getDigest(TEST_ENC_KEY,
+    final String md5 = HashUtil.getHexDigest(
+        TEST_ENC_KEY,
         new ByteArrayInputStream(UNSIGNED_CONTENT.getBytes(UTF_8)));
 
     fileStore.putS3ObjectWithKMSEncryption(TEST_BUCKET_NAME,
@@ -274,7 +276,7 @@ public class FileStoreTest {
     final File sourceFile = new File(TEST_FILE_PATH);
 
     final String name = sourceFile.getName();
-    final String md5 = HashUtil.getDigest(new FileInputStream(sourceFile));
+    final String md5 = HashUtil.getHexDigest(new FileInputStream(sourceFile));
     final String size = Long.toString(sourceFile.length());
 
     fileStore
@@ -362,7 +364,7 @@ public class FileStoreTest {
 
     final String sourceBucketName = "sourceBucket";
     final String sourceObjectName = sourceFile.getName();
-    final String md5 = HashUtil.getDigest(TEST_ENC_KEY, new FileInputStream(sourceFile));
+    final String md5 = HashUtil.getHexDigest(TEST_ENC_KEY, new FileInputStream(sourceFile));
 
     fileStore.putS3Object(sourceBucketName, sourceObjectName, TEXT_PLAIN, ENCODING_GZIP,
         new FileInputStream(sourceFile), false);

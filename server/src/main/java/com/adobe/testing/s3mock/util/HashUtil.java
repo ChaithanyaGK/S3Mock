@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 
 /**
@@ -30,26 +31,26 @@ import org.apache.commons.codec.binary.Hex;
 public class HashUtil {
 
   /**
-   * Calculates a base64 MD5 Hash for the content of an inputStream.
+   * Calculates a Hex MD5 Hash for the content of an inputStream.
    *
    * <p>Mainly used for comparison of files. E.g. After PUTting a File to the Server, the Amazon
-   * S3-Client expects a base64 MD5 Hash, ETag, as part of the response Header to verify the
+   * S3-Client expects a Hex MD5 Hash, ETag, as part of the response Header to verify the
    * validity of the transferred file.</p>
    *
    * @param inputStream the InputStream.
    *
-   * @return String Base64 MD5 Hash.
+   * @return String Hex MD5 Hash.
    *
    * @throws NoSuchAlgorithmException if no md5 can be found
    * @throws IOException if InputStream can't be read
    */
-  public static String getDigest(final InputStream inputStream)
+  public static String getHexDigest(final InputStream inputStream)
       throws NoSuchAlgorithmException, IOException {
-    return getDigest(null, inputStream);
+    return getHexDigest(null, inputStream);
   }
 
   /**
-   * Calculates a base64 MD5 Hash for the content of an inputStream.
+   * Calculates a Hex MD5 Hash for the content of an inputStream.
    *
    * <p>Mainly used for comparison of files. E.g. After PUTting a File to the Server, the Amazon
    * S3-Client expects a base64 MD5 Hash, ETag, as part of the response Header to verify the
@@ -60,12 +61,59 @@ public class HashUtil {
    *     hashing.
    * @param inputStream the InputStream.
    *
+   * @return String Hex MD5 Hash.
+   *
+   * @throws NoSuchAlgorithmException if no md5 can be found.
+   * @throws IOException if InputStream can't be read.
+   */
+  public static String getHexDigest(final String salt, final InputStream inputStream)
+      throws NoSuchAlgorithmException, IOException {
+    final byte[] digest = getDigest(salt, inputStream);
+    return new String(Hex.encodeHex(digest));
+  }
+
+  /**
+   * Calculates a Base64 MD5 Hash for the content of an inputStream.
+   *
+   * <p>Mainly used for comparison of files. E.g. During PUTting a File to the Server, the Amazon
+   * S3-Client sends a Base64 MD5 Hash, Content-Md5, as part of the request Header to verify the
+   * validity of the transferred file.</p>
+   *
+   * @param inputStream the InputStream.
+   *
+   * @return String Hex MD5 Hash.
+   *
+   * @throws NoSuchAlgorithmException if no md5 can be found
+   * @throws IOException if InputStream can't be read
+   */
+  public static String getBase64Digest(final InputStream inputStream)
+      throws NoSuchAlgorithmException, IOException {
+    return getBase64Digest(null, inputStream);
+  }
+
+  /**
+   * Calculates a base64 MD5 Hash for the content of an inputStream.
+   *
+   * <p>Mainly used for comparison of files. E.g. During PUTting a File to the Server, the Amazon
+   * S3-Client sends a base64 MD5 Hash, Content-Md5, as part of the request Header to verify the
+   * validity of the transferred file.</p>
+   *
+   * @param salt Optional salt to add to be digested, for simulating encryption dependent
+   *     hashing.
+   * @param inputStream the InputStream.
+   *
    * @return String Base64 MD5 Hash.
    *
    * @throws NoSuchAlgorithmException if no md5 can be found.
    * @throws IOException if InputStream can't be read.
    */
-  public static String getDigest(final String salt, final InputStream inputStream)
+  public static String getBase64Digest(final String salt, final InputStream inputStream)
+      throws NoSuchAlgorithmException, IOException {
+    final byte[] digest = getDigest(salt, inputStream);
+    return new String(Base64.encodeBase64(digest));
+  }
+
+  private static byte[] getDigest(String salt, InputStream inputStream)
       throws NoSuchAlgorithmException, IOException {
     final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
     messageDigest.reset();
@@ -79,7 +127,6 @@ public class HashUtil {
     while ((numBytes = inputStream.read(bytes)) != -1) {
       messageDigest.update(bytes, 0, numBytes);
     }
-    final byte[] digest = messageDigest.digest();
-    return new String(Hex.encodeHex(digest));
+    return messageDigest.digest();
   }
 }

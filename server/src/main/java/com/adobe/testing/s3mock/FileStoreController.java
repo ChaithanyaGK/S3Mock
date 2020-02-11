@@ -16,6 +16,7 @@
 
 package com.adobe.testing.s3mock;
 
+import static com.adobe.testing.s3mock.util.AwsHttpHeaders.CONTENT_MD5;
 import static com.adobe.testing.s3mock.util.AwsHttpHeaders.COPY_SOURCE;
 import static com.adobe.testing.s3mock.util.AwsHttpHeaders.COPY_SOURCE_RANGE;
 import static com.adobe.testing.s3mock.util.AwsHttpHeaders.METADATA_DIRECTIVE;
@@ -69,12 +70,16 @@ import com.adobe.testing.s3mock.dto.Owner;
 import com.adobe.testing.s3mock.dto.Part;
 import com.adobe.testing.s3mock.dto.Range;
 import com.adobe.testing.s3mock.dto.Tagging;
+import com.adobe.testing.s3mock.util.HashUtil;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,6 +94,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -512,25 +518,41 @@ class FileStoreController {
 
     final String filename = filenameFrom(bucketName, request);
     try (final ServletInputStream inputStream = request.getInputStream()) {
-      final Map<String, String> userMetadata = getUserMetadata(request);
-      final S3Object s3Object = fileStore.putS3Object(bucketName,
-          filename,
-          request.getContentType(),
-          request.getHeader(HttpHeaders.CONTENT_ENCODING),
-          inputStream,
-          isV4ChunkedWithSigningEnabled(request),
-          userMetadata);
+      final byte [] bytes = IOUtils.toByteArray(inputStream);
+      validateContentMd5(request.getHeader(CONTENT_MD5), bytes);
+      try (final InputStream inputStream1 = new ByteArrayInputStream(bytes)) {
+        final Map<String, String> userMetadata = getUserMetadata(request);
+        final S3Object s3Object =
+            fileStore.putS3Object(bucketName,
+                                  filename,
+                                  request.getContentType(),
+                                  request.getHeader(HttpHeaders.CONTENT_ENCODING),
+                                  inputStream1,
+                                  isV4ChunkedWithSigningEnabled(request),
+                                  userMetadata);
 
-      addTagsFromReq(request, bucketName, filename);
-
-      final HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.setETag("\"" + s3Object.getMd5() + "\"");
-      responseHeaders.setLastModified(s3Object.getLastModified());
-      addUserMetadata(responseHeaders::add, s3Object);
-      return new ResponseEntity<>(responseHeaders, OK);
-    } catch (final IOException e) {
+        addTagsFromReq(request, bucketName, filename);
+        final HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setETag("\"" + s3Object.getMd5() + "\"");
+        responseHeaders.setLastModified(s3Object.getLastModified());
+        addUserMetadata(responseHeaders::add, s3Object);
+        return new ResponseEntity<>(responseHeaders, OK);
+      }
+    } catch (final IOException | NoSuchAlgorithmException e) {
       LOG.error("Object could not be saved!", e);
       return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private void validateContentMd5(final String contentMd5, final byte [] bytes)
+      throws IOException, NoSuchAlgorithmException {
+    try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+      final String md5 = HashUtil.getBase64Digest(inputStream);
+      if (!StringUtils.isEmpty(contentMd5)
+          && !contentMd5.equals(md5)) {
+        throw new S3Exception(BAD_REQUEST.value(), "BadDigest",
+                              "The Content-MD5 you specified did not match what we received.");
+      }
     }
   }
 

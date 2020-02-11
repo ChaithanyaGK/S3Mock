@@ -233,8 +233,8 @@ class AmazonClientUploadIT extends S3TestBase {
   private void verifyObjectContent(final File uploadFile, final S3Object s3Object)
       throws NoSuchAlgorithmException, IOException {
     final InputStream uploadFileIs = new FileInputStream(uploadFile);
-    final String uploadHash = HashUtil.getDigest(uploadFileIs);
-    final String downloadedHash = HashUtil.getDigest(s3Object.getObjectContent());
+    final String uploadHash = HashUtil.getHexDigest(uploadFileIs);
+    final String downloadedHash = HashUtil.getHexDigest(s3Object.getObjectContent());
     uploadFileIs.close();
     s3Object.close();
 
@@ -383,8 +383,8 @@ class AmazonClientUploadIT extends S3TestBase {
         s3Object.getObjectMetadata().getContentEncoding(),
         is(equalTo(contentEncoding)));
 
-    final String uploadHash = HashUtil.getDigest(new ByteArrayInputStream(resource));
-    final String downloadedHash = HashUtil.getDigest(s3Object.getObjectContent());
+    final String uploadHash = HashUtil.getHexDigest(new ByteArrayInputStream(resource));
+    final String downloadedHash = HashUtil.getHexDigest(s3Object.getObjectContent());
     s3Object.close();
 
     assertThat("Up- and downloaded Files should have equal Hashes", uploadHash,
@@ -481,7 +481,7 @@ class AmazonClientUploadIT extends S3TestBase {
     final S3Object copiedObject =
         s3Client.getObject(destinationBucketName, destinationKey);
 
-    final String copiedHash = HashUtil.getDigest(copiedObject.getObjectContent());
+    final String copiedHash = HashUtil.getHexDigest(copiedObject.getObjectContent());
     copiedObject.close();
 
     assertThat("Sourcefile and copied File should have same Hashes",
@@ -518,7 +518,7 @@ class AmazonClientUploadIT extends S3TestBase {
     final S3Object copiedObject =
         s3Client.getObject(destinationBucketName, destinationKey);
 
-    final String copiedHash = HashUtil.getDigest(copiedObject.getObjectContent());
+    final String copiedHash = HashUtil.getHexDigest(copiedObject.getObjectContent());
     copiedObject.close();
 
     assertThat("Source file and copied File should have same Hashes",
@@ -560,7 +560,7 @@ class AmazonClientUploadIT extends S3TestBase {
     final S3Object copiedObject =
         s3Client.getObject(destinationBucketName, destinationKey);
 
-    final String copiedHash = HashUtil.getDigest(copiedObject.getObjectContent());
+    final String copiedHash = HashUtil.getHexDigest(copiedObject.getObjectContent());
     copiedObject.close();
 
     assertThat("Source file and copied File should have same Hashes",
@@ -595,7 +595,7 @@ class AmazonClientUploadIT extends S3TestBase {
     final S3Object copiedObject =
         s3Client.getObject(destinationBucketName, destinationKey);
 
-    final String copiedHash = HashUtil.getDigest(copiedObject.getObjectContent());
+    final String copiedHash = HashUtil.getHexDigest(copiedObject.getObjectContent());
     copiedObject.close();
 
     assertThat("Sourcefile and copied File should have same Hashes",
@@ -627,7 +627,7 @@ class AmazonClientUploadIT extends S3TestBase {
     final S3Object copiedObject =
         s3Client.getObject(destinationBucketName, destinationKey);
 
-    final String copiedHash = HashUtil.getDigest(copiedObject.getObjectContent());
+    final String copiedHash = HashUtil.getHexDigest(copiedObject.getObjectContent());
     copiedObject.close();
 
     assertThat("Sourcefile and copied File should have same Hashes",
@@ -662,7 +662,7 @@ class AmazonClientUploadIT extends S3TestBase {
         s3Client.getObjectMetadata(destinationBucketName, destinationKey);
 
     final InputStream uploadFileIs = new FileInputStream(uploadFile);
-    final String uploadHash = HashUtil.getDigest(TEST_ENC_KEYREF, uploadFileIs);
+    final String uploadHash = HashUtil.getHexDigest(TEST_ENC_KEYREF, uploadFileIs);
     assertThat("ETag should match", copyObjectResult.getETag(), is(uploadHash));
     assertThat("Files should have the same length", metadata.getContentLength(),
         is(uploadFile.length()));
@@ -1044,12 +1044,12 @@ class AmazonClientUploadIT extends S3TestBase {
     final S3Object s3ObjectWithHoutEtag = s3Client.getObject(requestWithHoutEtag);
 
     final String s3ObjectWithEtagDownloadedHash = HashUtil
-        .getDigest(s3ObjectWithEtag.getObjectContent());
+        .getHexDigest(s3ObjectWithEtag.getObjectContent());
     final String s3ObjectWithHoutEtagDownloadedHash = HashUtil
-        .getDigest(s3ObjectWithHoutEtag.getObjectContent());
+        .getHexDigest(s3ObjectWithHoutEtag.getObjectContent());
 
     final InputStream uploadFileIs = new FileInputStream(uploadFile);
-    final String uploadHash = HashUtil.getDigest(uploadFileIs);
+    final String uploadHash = HashUtil.getHexDigest(uploadFileIs);
 
     assertThat("The uploaded file and the recived file should be the same, "
             + "when requesting file with matching eTag given same eTag",
