@@ -30,7 +30,7 @@ public final class MetadataUtil {
   /**
    * Adds user metadata to response headers from S3Object.
    * @param responseHeaders {@link BiConsumer} representing
-   * {@link org.springframework.http.HttpHeaders#add(String, String)}.
+   * {@link org.jboss.resteasy.specimpl.ResponseBuilderImpl#header(String, Object)}.
    * @param s3Object {@link S3Object} S3Object where user metadata will be extracted
    */
   public static void addUserMetadata(final BiConsumer<String, String> responseHeaders,

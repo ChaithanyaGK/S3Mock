@@ -18,20 +18,20 @@ package com.adobe.testing.s3mock.dto;
 
 import com.adobe.testing.s3mock.domain.Bucket;
 import com.adobe.testing.s3mock.domain.Buckets;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents a result of listing all Buckets.
  */
-@JsonRootName("ListAllMyBucketsResult")
+@RegisterForReflection
+@XmlRootElement(name = "ListAllMyBucketsResult")
 public class ListAllMyBucketsResult {
 
-  @JsonProperty("Owner")
   private Owner owner;
 
-  @JsonProperty("Buckets")
   private Buckets buckets;
 
   /**
@@ -52,6 +52,7 @@ public class ListAllMyBucketsResult {
     this.buckets.setBuckets(buckets);
   }
 
+  @XmlElement(name = "Buckets")
   public Buckets getBuckets() {
     return buckets;
   }

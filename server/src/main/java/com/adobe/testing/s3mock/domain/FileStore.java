@@ -16,10 +16,9 @@
 
 package com.adobe.testing.s3mock.domain;
 
-import static com.adobe.testing.s3mock.S3MockApplication.PROP_ROOT_DIRECTORY;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import com.adobe.testing.s3mock.dto.CopyObjectResult;
 import com.adobe.testing.s3mock.dto.MultipartUpload;
@@ -58,21 +57,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.enterprise.context.ApplicationScoped;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /**
  * S3 Mock file store.
  */
-@Component
+@ApplicationScoped
 public class FileStore {
 
   private static final SimpleDateFormat S3_OBJECT_DATE_FORMAT =
@@ -96,7 +95,8 @@ public class FileStore {
    *
    * @param rootDirectory The directory to use. If omitted, a temp directory will be used.
    */
-  public FileStore(@Value("${" + PROP_ROOT_DIRECTORY + ":}") final String rootDirectory) {
+  public FileStore(
+      @ConfigProperty(name = "jira", defaultValue = "root") final String rootDirectory) {
     rootFolder = createRootFolder(rootDirectory);
   }
 
@@ -475,15 +475,15 @@ public class FileStore {
    *
    * @return normalized prefix containing slashes flipped the right way
    */
-  private String normalizePrefix(Bucket bucket, String prefix) {
+  private String normalizePrefix(final Bucket bucket, final String prefix) {
     if (prefix == null) {
       return null;
     }
-    FileSystem fileSystem = bucket.getPath().getFileSystem();
-    String normalized = fileSystem.getPath(prefix).toString();
+    final FileSystem fileSystem = bucket.getPath().getFileSystem();
+    final String normalized = fileSystem.getPath(prefix).toString();
     //check if there was a trailing slash removed
     return (normalized.length() != prefix.length()
-            ? normalized + fileSystem.getSeparator() : normalized);
+        ? normalized + fileSystem.getSeparator() : normalized);
   }
 
   /**

@@ -16,20 +16,19 @@
 
 package com.adobe.testing.s3mock.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import java.nio.file.Path;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * DTO representing a bucket.
  */
-@JsonRootName("Bucket")
+@XmlRootElement(name = "Bucket")
 public class Bucket {
 
-  @JsonProperty("Name")
   private String name;
 
-  @JsonProperty("CreationDate")
   private String creationDate;
 
   private Path path;
@@ -47,6 +46,10 @@ public class Bucket {
     path = bucketPath;
   }
 
+  public Bucket() {
+  }
+
+  @XmlElement
   public String getCreationDate() {
     return creationDate;
   }
@@ -55,6 +58,7 @@ public class Bucket {
     this.creationDate = creationDate;
   }
 
+  @XmlElement
   public String getName() {
     return name;
   }
@@ -63,6 +67,7 @@ public class Bucket {
     this.name = name;
   }
 
+  @XmlTransient
   public Path getPath() {
     return path;
   }

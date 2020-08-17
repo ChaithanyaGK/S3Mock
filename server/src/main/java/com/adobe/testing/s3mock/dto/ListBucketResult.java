@@ -17,44 +17,35 @@
 package com.adobe.testing.s3mock.dto;
 
 import com.adobe.testing.s3mock.domain.BucketContents;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents a result of listing objects that reside in a Bucket.
  */
-@JsonRootName("ListBucketResult")
+@XmlRootElement(name = "ListBucketResult")
 public class ListBucketResult implements Serializable {
 
-  @JsonProperty("Name")
   private String name;
 
-  @JsonProperty("Prefix")
   private String prefix;
 
-  @JsonProperty("Marker")
   private String marker;
 
-  @JsonProperty("MaxKeys")
   private int maxKeys;
 
-  @JsonProperty("IsTruncated")
   private boolean isTruncated;
 
-  @JsonProperty("NextMarker")
   private String nextMarker;
 
-  @JsonProperty("Contents")
   @JacksonXmlElementWrapper(useWrapping = false)
   private List<BucketContents> contents;
 
-  @JsonProperty("CommonPrefixes")
   private CommonPrefixes commonPrefixes;
 
   /**

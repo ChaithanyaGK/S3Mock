@@ -17,33 +17,26 @@
 package com.adobe.testing.s3mock.domain;
 
 import com.adobe.testing.s3mock.dto.Owner;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Contents are the XMLElements of ListBucketResult see http://docs.aws.amazon
  * .com/AmazonS3/latest/API/RESTBucketGET.html
  */
-@JsonRootName("Contents")
+@XmlRootElement(name = "Contents")
 public class BucketContents {
 
-  @JsonProperty("Key")
   private String key;
 
-  @JsonProperty("LastModified")
   private String lastModified;
 
-  @JsonProperty("ETag")
   private String etag;
 
-  @JsonProperty("Size")
   private String size;
 
-  @JsonProperty("StorageClass")
   private String storageClass;
 
-  @JsonProperty("Owner")
   private Owner owner;
 
   /**

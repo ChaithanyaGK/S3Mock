@@ -16,21 +16,21 @@
 
 package com.adobe.testing.s3mock.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO representing a list of buckets.
  */
-@JsonRootName("Buckets")
+@XmlRootElement(name = "Buckets")
 public class Buckets {
 
-  @JsonProperty("Bucket")
-  @JacksonXmlElementWrapper(useWrapping = false)
   private List<Bucket> buckets;
 
+  @XmlElement(name = "Bucket")
+  @JacksonXmlElementWrapper(useWrapping = false)
   public List<Bucket> getBuckets() {
     return buckets;
   }

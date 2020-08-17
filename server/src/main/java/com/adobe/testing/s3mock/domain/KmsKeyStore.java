@@ -16,20 +16,22 @@
 
 package com.adobe.testing.s3mock.domain;
 
-import com.adobe.testing.s3mock.S3MockApplication;
+//import com.adobe.testing.s3mock.S3MockApplication;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+//import org.springframework.beans.factory.annotation.Value;
 
-/**
- * Stores valid KMS key references for the {@link S3MockApplication}.
- */
+///**
+// * Stores valid KMS key references for the {@link S3MockApplication}.
+// */
 public class KmsKeyStore {
 
-  @Value("${validKmsKeys:}")
+  @ConfigProperty(name = "validKmsKeys")
+  //  @Value("${validKmsKeys:}")
   private final Set<String> defaultKeys = new HashSet<>();
 
   private final Map<String, String> kmsKeys = new ConcurrentHashMap<>();

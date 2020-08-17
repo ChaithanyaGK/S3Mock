@@ -20,16 +20,20 @@ import com.adobe.testing.s3mock.domain.BucketContents;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents a result of listing objects that reside in a Bucket.
  */
+@RegisterForReflection
 @JsonRootName("ListBucketResult")
+@XmlRootElement(name = "ListBucketResult")
 public class ListBucketResultV2 implements Serializable {
 
   @JsonProperty("Name")
